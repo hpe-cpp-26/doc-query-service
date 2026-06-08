@@ -10,7 +10,6 @@ function App() {
 
   return (
     <div className="app-container">
-      <Sidebar groups={groups} />
       <ChatArea setSelectedDoc={setSelectedDoc} />
       {selectedDoc && (
         <DocumentViewer
