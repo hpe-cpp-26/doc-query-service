@@ -22,7 +22,10 @@ function ChatArea({ setSelectedDoc }) {
 
     setMessages((prev) => [
       ...prev,
-      { role: "user", content: userQuery },
+      {
+        role: "user",
+        content: userQuery,
+      },
     ]);
 
     setLoading(true);
@@ -30,11 +33,17 @@ function ChatArea({ setSelectedDoc }) {
     try {
       const data = await searchDocuments(userQuery);
 
+      const answerWithConfidence = `
+${data.answer || "No answer returned."}
+
+Confidence Score: ${data.confidence_score ?? "N/A"}%
+      `.trim();
+
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: data.answer || "No answer returned.",
+          content: answerWithConfidence,
           sources: data.sources || [],
         },
       ]);
