@@ -43,15 +43,6 @@ Key Points:
 -point 2
 -point 3
 
-Confidence Score:
-<number between 0 and 100>
-
-Confidence Guidelines:
-- 90-100: Answer directly supported by context.
-- 70-89: Mostly supported by context.
-- 50-69: Partially supported by context.
-- Below 50: Weak evidence in context.
-
 
 Do not mention chunk numbers.
 Do not mention retrieval scores.
