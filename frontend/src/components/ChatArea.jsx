@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Message from "./Message";
-import SearchResultCard from "./SearchResultCard";
 import { searchDocuments } from "../services/api";
+import Sidebar from "./Sidebar";
 
 function ChatArea({ setSelectedDoc }) {
   const [messages, setMessages] = useState([
@@ -26,6 +26,10 @@ function ChatArea({ setSelectedDoc }) {
         role: "user",
         content: userQuery,
       },
+      {
+        role: "user",
+        content: userQuery,
+      },
     ]);
 
     setLoading(true);
@@ -39,15 +43,23 @@ ${data.answer || "No answer returned."}
 Confidence Score: ${data.confidence_score ?? "N/A"}%
       `.trim();
 
+      const answerWithConfidence = `
+${data.answer || "No answer returned."}
+
+Confidence Score: ${data.confidence_score ?? "N/A"}%
+      `.trim();
+
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: data.answer || "No answer generated.",
-          sources: data.sources || [],
+          content: answerWithConfidence,
+          sources: (data.sources || []).slice(0, 3),
         },
       ]);
     } catch (err) {
+      console.error("Search failed:", err);
+
       console.error("Search failed:", err);
 
       setMessages((prev) => [
@@ -67,6 +79,9 @@ Confidence Score: ${data.confidence_score ?? "N/A"}%
     if (e.key === "Enter") {
       sendMessage();
     }
+    if (e.key === "Enter") {
+      sendMessage();
+    }
   };
 
   return (
@@ -74,18 +89,7 @@ Confidence Score: ${data.confidence_score ?? "N/A"}%
       <div className="messages">
         {messages.map((msg, index) => (
           <div key={index}>
-            <Message
-              message={msg}
-              onCiteClick={(source) =>
-                setSelectedDoc({
-                  title: `Document ${source.doc_id}`,
-                  source: `Similarity: ${(source.similarity * 100).toFixed(1)}%`,
-                  path: source.doc_path,
-                  content: source.chunk_text,
-                  url: source.url,
-                })
-              }
-            />
+            <Message message={msg} setSelectedDoc={setSelectedDoc} />
           </div>
         ))}
 
