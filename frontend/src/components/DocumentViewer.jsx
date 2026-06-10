@@ -1,3 +1,6 @@
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
 function DocumentViewer({ document, onClose }) {
   return (
     <div className="doc-viewer">
@@ -31,7 +34,11 @@ function DocumentViewer({ document, onClose }) {
 
       <hr />
 
-      <p>{document.content}</p>
+      <div className="markdown-body" style={{ overflowX: 'auto', lineHeight: '1.6' }}>
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {document.content}
+        </ReactMarkdown>
+      </div>
     </div>
   );
 }
