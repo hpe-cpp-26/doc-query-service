@@ -1,4 +1,10 @@
 from fastapi import APIRouter
+import os
+from dotenv import load_dotenv
+
+# Load frontend/.env to get GitHub config
+
+load_dotenv()
 
 from app.models.search_models import (
     SearchRequest,
@@ -13,18 +19,20 @@ from app.services.llm_service import generate_answer
 
 router = APIRouter()
 
-def build_document_url(doc_id: str):
-
-    if "payment-system" in doc_id:
-        return "https://github.com/hpe-cpp-26/test-central-data-store/blob/main/root/payment-system-design-documentation/README.md"
-
-    elif "self-healing-system" in doc_id:
-        return "https://github.com/hpe-cpp-26/test-central-data-store/blob/main/root/self-healing-distributed-system-documentation/README.md"
-
-    elif "travel-planner-system" in doc_id:
-        return "https://github.com/hpe-cpp-26/test-central-data-store/blob/main/root/travel-planner-ai-system/README.md"
-
-    return ""
+def build_document_url(doc_path: str):
+    if not doc_path:
+        return ""
+        
+    github_org = os.getenv("GITHUB_ORG", "")
+    github_repo = os.getenv("GITHUB_REPO", "")
+    
+    if not (github_org and github_repo):
+        return ""
+        
+    # Remove leading slash from doc_path if present to avoid double slashes
+    doc_path = doc_path.lstrip("/")
+    
+    return f"https://github.com/{github_org}/{github_repo}/blob/main/{doc_path}"
 
 @router.post(
     "/search",
@@ -45,7 +53,7 @@ def search(request: SearchRequest):
         )
         
     for chunk in chunks:
-        chunk["url"] = build_document_url(chunk["doc_id"])
+        chunk["url"] = build_document_url(chunk.get("doc_path", ""))
     
     answer = generate_answer(
         request.query,
