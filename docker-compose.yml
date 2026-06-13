@@ -10,8 +10,6 @@ services:
       - "11434:11434"
     restart: unless-stopped
 
-
-
   #FastAPI backend
   backend:
     build:
@@ -22,6 +20,7 @@ services:
       - app/.env
     environment:
       - OLLAMA_HOST=http://ollama:11434
+      - DATABASE_URL
     depends_on:
       - ollama
     restart: unless-stopped
